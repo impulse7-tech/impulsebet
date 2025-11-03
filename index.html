@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImpuLse Bet</title>
+    <title>Impulse Bet: Футболни Залози</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="topbar">
-        <img src="impulse_logo.svg" alt="" class="top-logo">
+        <img src="impulse_logo.svg" alt="Impulse Bet Logo" class="top-logo">
         <div id="realTimeClock" class="score-area clock-area"></div> 
     </div>
 
@@ -21,20 +21,52 @@
                 Баланс: <span id="userPoints">1000</span> Точки
             </div>
             
+            <button class="menu-button" data-target="home-area">🏠 Начало</button>
             <button class="menu-button active" data-target="betting-area">⚽ Залози</button>
             <button class="menu-button" data-target="my-bets-area">📜 Моите Залози</button>
+            <button class="menu-button" data-target="ranking-area">🏆 Класиране</button>
             <button class="menu-button" data-target="wheel-area" id="openWheelModalButton">
-                🎡 Дневен Бонус
+                🎡 Бонус колело
             </button>
+            
+            <div class="bottom-menu-spacer"></div>
+            <button class="menu-button" data-target="rules-area">📑 Правила и условия</button>
             </div>
 
         <div id="content-area">
+            
+            <div id="home-area" class="content-section">
+                
+                <div id="impulse-banner">
+                    <div class="banner-text-wrapper">
+                        <span class="impulse-main-text">IMPULSE BET</span>
+                        <span class="impulse-sub-text">Завърти, Рискувай, Спечели!</span>
+                    </div>
+                </div>
+                
+                <h2>🏠 Добре дошли в Impulse Bet!</h2>
+                <div class="info-card">
+                    <p>Този сайт е създаден единствено с **цел забавление** и не включва залози с реални пари.</p>
+                    <p>Използвате **точки**, които може да печелите чрез залози и бонуси, за да се състезавате с другите участници.</p>
+                </div>
+
+                <h3>💸 Месечна Награда</h3>
+                <div class="info-card prize-card">
+                    <p>В края на всеки месец участникът с **най-много събрани точки** печели парична награда!</p>
+                    <ul>
+                        <li>🥇 **1-во място:** 500 лв.</li>
+                        <li>🥈 **2-ро място:** 350 лв.</li>
+                        <li>🥉 **3-то място:** 150 лв.</li>
+                    </ul>
+                    <p class="small-text">* За да участвате, моля, прочетете "Правила и условия".</p>
+                </div>
+            </div>
 
             <div id="betting-area" class="content-section active">
                 
                 <div id="impulse-banner">
                     <div class="banner-text-wrapper">
-                        <span class="impulse-main-text">IMPULSE</span>
+                        <span class="impulse-main-text">IMPULSE BET</span>
                         <span class="impulse-sub-text">Завърти, Рискувай, Спечели!</span>
                     </div>
                 </div>
@@ -59,10 +91,54 @@
                 <p style="margin-top: 10px; font-style: italic;">Бутонът "Затвори Залог" (Cash Out) се появява под всеки неуреден залог.</p>
             </div>
             
+            <div id="ranking-area" class="content-section">
+                <h2>🏆 Класиране (Топ 10)</h2>
+                <p>Базирано на общия брой натрупани точки.</p>
+                <div id="rankingList">
+                    <p>Зареждане на класирането...</p>
+                </div>
+            </div>
+
             <div id="wheel-area" class="content-section">
-                <h2>🎡 Дневен Бонус</h2>
-                <p>Натиснете бутона "Дневен Бонус" в менюто, за да отворите колелото.</p>
-                <div id="wheelResult" class="log"></div>
+                <h2>🎡 Бонус колело</h2>
+                
+                <div class="wheel-info-container">
+                    <div class="wheel-prize-list">
+                        <h3>Награди:</h3>
+                        <ul>
+                            <li>100 Точки</li>
+                            <li>200 Точки</li>
+                            <li>500 Точки</li>
+                            <li>1000 Точки</li>
+                        </ul>
+                    </div>
+                    <div class="wheel-countdown-box">
+                        <h3>Следващо завъртане:</h3>
+                        <p id="modalWheelCooldown" class="cooldown-message large-timer"></p> 
+                    </div>
+                </div>
+
+                <div class="wheel-modal-open-area">
+                    <p>Натиснете бутона по-долу, за да завъртите колелото и спечелите своя седмичен бонус!</p>
+                    <button id="spinWheelInPageButton" class="action-button modal-spin-button">Отвори Бонус колелото</button>
+                    <p id="pageWheelResult" class="log" style="text-align: center; min-height: 20px;"></p>
+                </div>
+            </div>
+            
+            <div id="rules-area" class="content-section">
+                <h2>📑 Правила и условия за участие</h2>
+                <div class="info-card">
+                    <p>Impulse Bet е платформа за **симулация на залози** (Fun Betting). Участието е безплатно и е с цел забавление и демонстрация.</p>
+                    <h3>Условия за класиране (Месечна Награда):</h3>
+                    <ol>
+                        <li>**Цел:** Да бъдеш участникът с най-много точки в края на календарния месец.</li>
+                        <li>**Активност:** Участникът трябва да има поне 5 направени залога през месеца.</li>
+                        <li>**Възраст:** Участникът трябва да е навършил 18 години.</li>
+                        <li>**Един Профил:** Разрешено е участие само с един профил (баланс с точки).</li>
+                        <li>**Fair Play:** Всякакви опити за манипулиране на резултатите или използване на софтуер за автоматизация ще доведат до дисквалификация.</li>
+                    </ol>
+                    <p>Класирането се обновява в реално време, но финалните резултати се обявяват на 1-во число от новия месец.</p>
+                </div>
             </div>
 
         </div> 
@@ -93,26 +169,24 @@
         <div class="modal-content">
             <span class="close-button">&times;</span>
             
-            <div id="wheelBanner">BONUS WHEEL</div>
+            <div id="wheelBanner">БОНУС КОЛЕЛО</div>
 
             <div id="actualWheelContainer" style="text-align: center; margin: 20px auto;">
                 <div id="spinner" class="spinner">
-                    <div class="wheel-segment" data-reward="50">50</div>
                     <div class="wheel-segment" data-reward="100">100</div>
                     <div class="wheel-segment" data-reward="200">200</div>
                     <div class="wheel-segment" data-reward="500">500</div>
                     <div class="wheel-segment" data-reward="1000">1000</div>
-                    <div class="wheel-segment" data-reward="50">50</div>
                     <div class="wheel-segment" data-reward="100">100</div>
                     <div class="wheel-segment" data-reward="200">200</div>
                     <div class="wheel-segment" data-reward="500">500</div>
                     <div class="wheel-segment" data-reward="1000">1000</div>
+                    <div class="wheel-segment" data-reward="100">100</div>
+                    <div class="wheel-segment" data-reward="200">200</div>
                 </div>
                 <div class="wheel-indicator">▼</div> 
             </div>
             
-            <p id="modalWheelCooldown" class="cooldown-message"></p> 
-
             <p id="modalWheelResult" class="log" style="text-align: center; min-height: 20px;">Натиснете "Завърти" за да спечелите точки!</p>
             <button id="spinWheelButton" class="action-button modal-spin-button">Завърти</button>
             
@@ -121,6 +195,4 @@
     
     <script src="script.js"></script>
 </body>
-
 </html>
-
