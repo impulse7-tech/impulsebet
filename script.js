@@ -122,7 +122,7 @@ function initTournamentIfMissing(){
   // create group round-robin schedule but organized in 3 rounds:
   // We'll produce 3 rounds per group, each round has 2 matches (so every team plays once per round)
   const matches = [];
-  const baseStart = nextRoundHour(new Date());
+  const baseStart = nextRoundHour(new Date(Date.now() + 60 * 60 * 1000));
   const roundsCount = 3;
   // for each round, schedule start at baseStart + r * 60min
   for(let r=0;r<roundsCount;r++){
@@ -134,7 +134,15 @@ function initTournamentIfMissing(){
       const pairings = (r===0)? [[0,1],[2,3]] : (r===1)? [[0,2],[1,3]] : [[0,3],[1,2]];
       pairings.forEach(p=>{
         const m = makeMatch('group', teamsInG[p[0]], teamsInG[p[1]], new Date(roundStart).toISOString(), 'group', g);
-        matches.push(m);
+
+// Ако по някаква причина стартът е в миналото – премествай го 1 час напред
+if (new Date(m.startTime).getTime() < Date.now()) {
+  const newStart = nextRoundHour(new Date(Date.now() + 60 * 60 * 1000));
+  m.startTime = newStart.toISOString();
+  m.endTime = new Date(newStart.getTime() + MATCH_DURATION_MIN * 60 * 1000).toISOString();
+}
+
+matches.push(m);
       });
     });
   }
