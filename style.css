@@ -67,6 +67,10 @@ body {
     flex-direction: column;
 }
 
+.bottom-menu-spacer {
+    margin-top: auto; /* Избутва "Правила и условия" най-отдолу */
+}
+
 /* Стилизиране на Баланса в Страничното Меню (КВАДРАТЧЕТО) */
 .sidebar-balance {
     background-color: #34495e; 
@@ -104,7 +108,7 @@ body {
 #content-area {
     flex-grow: 1;
     padding: 20px;
-    margin-left: 0; /* Вече не е фиксиран */
+    margin-left: 0; 
     background-color: #f4f4f4; 
     transition: max-width 0.3s, margin-right 0.3s;
 }
@@ -115,6 +119,68 @@ body {
 }
 .content-section.active {
     display: block;
+}
+
+/* --- БАНЕР (НОВА ВИЗИЯ) --- */
+#impulse-banner {
+    background: linear-gradient(90deg, #3498db, #1abc9c); 
+    color: white;
+    padding: 20px 40px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.banner-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.impulse-main-text {
+    font-size: 3em;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.impulse-sub-text {
+    font-size: 1.2em;
+    margin-top: -5px;
+    font-style: italic;
+}
+
+
+/* --- ИНФО СЕКЦИИ (НАЧАЛО И ПРАВИЛА) --- */
+.info-card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.prize-card {
+    border-left: 5px solid #f1c40f;
+}
+
+.info-card ul {
+    list-style: none;
+    padding: 0;
+}
+.info-card li {
+    padding: 5px 0;
+    font-weight: bold;
+    border-bottom: 1px dotted #ccc;
+}
+.info-card li:last-child {
+    border-bottom: none;
+}
+.small-text {
+    font-size: 0.85em;
+    color: #7f8c8d;
 }
 
 /* --- ФИШ ЗА ЗАЛОЗИ (BETSLIP) - ДИНАМИЧЕН --- */
@@ -246,14 +312,13 @@ body {
     cursor: not-allowed;
 }
 
-/* **ПОПРАВКА:** Бутон за Cash Out да се вижда цялото квадратче */
 .cash-out-btn {
     background-color: #f39c12; /* Оранжев цвят */
     margin-top: 0;
-    padding: 5px 8px; /* Намален падинг */
+    padding: 5px 8px; 
     width: auto;
     font-size: 0.8em;
-    white-space: nowrap; /* Не позволява пренасяне на текст */
+    white-space: nowrap; 
 }
 
 .cooldown-message {
@@ -263,12 +328,52 @@ body {
     color: #e67e22;
 }
 
+.large-timer {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #c0392b;
+    margin: 10px 0;
+}
+
+/* --- БОНУС КОЛЕЛО (СЕКЦИЯ) --- */
+
+.wheel-info-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    margin-bottom: 25px;
+    padding: 15px;
+    background-color: #e6f0ff;
+    border-radius: 8px;
+    border: 1px solid #3498db;
+}
+
+.wheel-prize-list ul {
+    list-style: disc;
+    padding-left: 20px;
+}
+
+.wheel-countdown-box {
+    text-align: center;
+    padding: 10px;
+}
+.wheel-modal-open-area {
+    background-color: #ffffff;
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.modal-spin-button {
+    font-size: 1.1em;
+    padding: 12px 20px;
+    margin: 10px 0;
+}
+
 
 /* --- МОДАЛЕН ПРОЗОРЕЦ И КОЛЕЛО --- */
+/* Стиловете за модала са същите, добавяме стилове само за сегментите */
 
-/* ... (Стилове за модален прозорец и затваряне) ... */
-
-/* Стилове за симулирано колело */
 #actualWheelContainer {
     position: relative;
     width: 300px;
@@ -277,7 +382,7 @@ body {
     border-radius: 50%;
     overflow: hidden;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    background-color: #2c3e50; /* Фон на контейнера за по-добър контраст */
+    background-color: #2c3e50; 
     border: 10px solid #f1c40f;
 }
 
@@ -293,7 +398,7 @@ body {
     width: 150%;
     height: 150%;
     /* 10 Сегмента: 360/10 = 36 градуса на сегмент */
-    clip-path: polygon(50% 50%, 50% 0%, 94.2% 1.4%, 90% 10%); /* Променен clip-path за 10 сегмента */
+    clip-path: polygon(50% 50%, 50% 0%, 94.2% 1.4%, 90% 10%); 
     transform-origin: 50% 50%;
     display: flex;
     justify-content: center;
@@ -306,18 +411,19 @@ body {
     box-sizing: border-box;
 }
 
-/* Цветове на 10-те сегмента (36 градуса) */
-#actualWheelContainer .wheel-segment:nth-child(1) { background-color: #c0392b; transform: rotate(0deg); }
-#actualWheelContainer .wheel-segment:nth-child(2) { background-color: #3498db; transform: rotate(36deg); }
-#actualWheelContainer .wheel-segment:nth-child(3) { background-color: #2ecc71; transform: rotate(72deg); }
-#actualWheelContainer .wheel-segment:nth-child(4) { background-color: #f1c40f; color: #2c3e50; transform: rotate(108deg); }
-#actualWheelContainer .wheel-segment:nth-child(5) { background-color: #9b59b6; transform: rotate(144deg); }
+/* Цветове на 10-те сегмента за 100, 200, 500, 1000 */
+#actualWheelContainer .wheel-segment:nth-child(1) { background-color: #f1c40f; color: #2c3e50; transform: rotate(0deg); } /* 100 */
+#actualWheelContainer .wheel-segment:nth-child(2) { background-color: #2ecc71; transform: rotate(36deg); } /* 200 */
+#actualWheelContainer .wheel-segment:nth-child(3) { background-color: #e67e22; transform: rotate(72deg); } /* 500 */
+#actualWheelContainer .wheel-segment:nth-child(4) { background-color: #c0392b; transform: rotate(108deg); } /* 1000 */
 
-#actualWheelContainer .wheel-segment:nth-child(6) { background-color: #e74c3c; transform: rotate(180deg); }
-#actualWheelContainer .wheel-segment:nth-child(7) { background-color: #2980b9; transform: rotate(216deg); }
-#actualWheelContainer .wheel-segment:nth-child(8) { background-color: #16a085; transform: rotate(252deg); }
-#actualWheelContainer .wheel-segment:nth-child(9) { background-color: #d35400; transform: rotate(288deg); }
-#actualWheelContainer .wheel-segment:nth-child(10) { background-color: #8e44ad; transform: rotate(324deg); }
+#actualWheelContainer .wheel-segment:nth-child(5) { background-color: #f39c12; color: #2c3e50; transform: rotate(144deg); } /* 100 */
+#actualWheelContainer .wheel-segment:nth-child(6) { background-color: #1abc9c; transform: rotate(180deg); } /* 200 */
+#actualWheelContainer .wheel-segment:nth-child(7) { background-color: #d35400; transform: rotate(216deg); } /* 500 */
+#actualWheelContainer .wheel-segment:nth-child(8) { background-color: #e74c3c; transform: rotate(252deg); } /* 1000 */
+
+#actualWheelContainer .wheel-segment:nth-child(9) { background-color: #f1c40f; color: #2c3e50; transform: rotate(288deg); } /* 100 */
+#actualWheelContainer .wheel-segment:nth-child(10) { background-color: #2ecc71; transform: rotate(324deg); } /* 200 */
 
 .wheel-indicator {
     position: absolute;
@@ -329,8 +435,7 @@ body {
     z-index: 10;
 }
 
-/* --- СТИЛОВЕ ЗА ТАБЛИЦАТА С АКТИВНИ ЗАЛОЗИ (MY BETS) --- */
-/* (Тази секция остава непроменена от предишната ви версия, тъй като там вече беше добре оформена като таблица) */
+/* --- СТИЛОВЕ ЗА ТАБЛИЦАТА С АКТИВНИ ЗАЛОЗИ (MY BETS) и КЛАСИРАНЕТО --- */
 
 .bets-table {
     width: 100%;
@@ -379,3 +484,13 @@ body {
 .bet-status-печеливш .bet-status-cell { color: #2ecc71; }
 .bet-status-губещ .bet-status-cell { color: #e74c3c; }
 .bet-status-уредено .bet-status-cell { color: #f39c12; }
+
+/* Стил за потребителя в класирането */
+#rankingTable .ranking-user-row {
+    background-color: #fff9e6; /* Леко жълто за да се отличава */
+    border: 2px solid #f1c40f;
+    font-weight: bold;
+}
+#rankingTable .ranking-user-row td {
+    color: #c0392b; 
+}
