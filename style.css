@@ -1,496 +1,165 @@
-/* --- ОСНОВНИ СТИЛОВЕ --- */
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4; /* Променен на светло сив фон */
-    color: #333;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
+:root{
+    --bg:#f6f8fb;
+    --card:#ffffff;
+    --muted:#7b8a99;
+    --accent:#ffb400;
+    --accent-2:#1abc9c;
+    --danger:#e74c3c;
+    --shadow: 0 6px 18px rgba(31,41,55,0.06);
+    --glass: rgba(255,255,255,0.6);
 }
 
-/* 🔝 Стилизиране на Горния Блок (Topbar) */
-#topbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50px;
-    background-color: #ffffff; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    z-index: 1000;
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,#f3f6fb 0%, #ffffff 100%);
+    color:#222;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
 }
 
-.top-logo {
-    height: 40px; 
-    margin-right: auto;
+/* Top */
+#topbar{
+    position:fixed; top:0; left:0; right:0; height:64px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:8px 20px; gap:12px; z-index:1000;
+    background:rgba(255,255,255,0.85);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+}
+.top-left{display:flex;align-items:center;gap:12px}
+.top-logo{height:44px}
+.brand{font-weight:800;color:#2c3e50;font-size:1.05rem}
+.top-right{display:flex;align-items:center;gap:12px}
+.clock{background:#34495e;color:#fff;padding:6px 10px;border-radius:8px;font-weight:700}
+.mini-user{font-size:0.9rem;color:var(--muted)}
+
+/* Banner */
+#impulse-banner{margin-top:64px;background:linear-gradient(90deg,#263344 0%, #16222a 100%);color:#fff;padding:40px 0;text-align:center}
+.banner-inner h1{font-size:2rem;margin:0;color:var(--accent)}
+.banner-inner .subtitle{margin:6px 0 0;color:#e8eef6}
+
+/* Layout */
+.main-layout{
+    display:grid;
+    grid-template-columns: 240px 1fr 320px;
+    gap:18px;
+    max-width:1200px;margin:22px auto;padding:0 18px;
 }
 
-/* Стилизиране на Часовника */
-#realTimeClock {
-    margin-left: auto; 
-    background-color: #34495e; 
-    border: 1px solid #1abc9c; 
+/* Sidebar */
+#sidebar{position:relative;top:0}
+.sidebar-card{
+    background:var(--card);padding:14px;border-radius:12px;box-shadow:var(--shadow);margin-bottom:16px;
+}
+.small-card{padding:10px}
+.balance-label{font-size:0.85rem;color:var(--muted)}
+.balance-amount{font-size:1.25rem;font-weight:800;color:#1f8b6b;margin-top:6px}
+.menu{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.menu-button{
+    padding:10px 12px;border-radius:10px;border:none;background:#f2f6fb;color:#213244;text-align:left;font-weight:700;cursor:pointer;
+    box-shadow:0 2px 6px rgba(16,24,40,0.02);
+}
+.menu-button.active{background:linear-gradient(90deg,var(--accent-2),#16a085);color:#fff;box-shadow:0 8px 20px rgba(22,160,133,0.12)}
+.menu-button:hover{transform:translateY(-1px);transition:all .12s ease}
+
+/* Content area */
+#content-area{min-height:520px}
+.content-section{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow);margin-bottom:16px;display:none}
+.content-section.active{display:block}
+.info-card{background:linear-gradient(180deg,#fff,#fbfdff);padding:12px;border-radius:10px;border:1px solid rgba(20,30,40,0.03)}
+.muted{color:var(--muted)}
+.divider{border:none;height:1px;background:#eef2f6;margin:12px 0}
+
+/* Bets */
+.matches-list{display:flex;flex-direction:column;gap:10px}
+.match-card{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:#f8fbff;border:1px solid #eef6ff}
+.match-details strong{font-size:1rem}
+.match-odds{display:flex;gap:8px}
+.odd-button{padding:8px 10px;border-radius:8px;border:2px solid #2b77d9;background:#fff;color:#2b77d9;font-weight:800;cursor:pointer}
+.odd-button:hover{background:#2b77d9;color:#fff;transform:translateY(-2px)}
+.odd-button.selected{background:var(--danger);border-color:var(--danger);color:#fff}
+
+/* Betslip */
+#betslipArea{background:var(--card);padding:0;border-radius:12px;box-shadow:var(--shadow);height:fit-content;align-self:start}
+#betslipTitle{background:#263344;color:#fff;padding:12px;border-top-left-radius:12px;border-top-right-radius:12px;font-weight:800;text-align:center}
+.betslip-content-wrapper{padding:12px}
+.betslip-list{list-style:none;padding:0;margin:0;max-height:280px;overflow:auto}
+.betslip-selection{display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px dotted #eef3fb}
+.remove-selection{background:none;border:none;color:var(--danger);font-size:18px;cursor:pointer}
+.summary-row{display:flex;justify-content:space-between;padding:6px 0}
+.total-win-row{font-weight:800;color:#1abc9c;padding-top:6px;border-top:1px solid #eef2f6;margin-top:8px}
+
+/* Buttons */
+.action-button{display:inline-block;padding:10px 14px;background:linear-gradient(90deg,var(--accent),#ff9a00);color:#fff;border:none;border-radius:10px;font-weight:800;cursor:pointer}
+.action-button.small{padding:8px 10px;font-size:0.95rem}
+.action-button:disabled{opacity:0.55;cursor:not-allowed}
+.action-button.danger{background:linear-gradient(90deg,var(--danger),#d64545)}
+input[type="text"],input[type="password"],input[type="email"],input[type="tel"],input[type="number"]{
+    width:100%;padding:9px;border-radius:8px;border:1px solid #e6eef8;margin-top:6px;margin-bottom:10px;outline:none
+}
+input[type="number"]{max-width:120px}
+
+/* Tables and tabs */
+.tabs-container{display:flex;gap:8px;margin-bottom:10px}
+.tab-button{padding:8px 12px;border-radius:8px;border:1px solid transparent;background:transparent;cursor:pointer;font-weight:700}
+.tab-button.active{border-color:#dbeefd;background:linear-gradient(90deg,#eef8ff,#fff)}
+.bets-table{width:100%;border-collapse:collapse}
+.bets-table th{background:#263344;color:#fff;padding:10px;text-align:center}
+.bets-table td{padding:8px;border:1px solid #eef2f6;text-align:center}
+
+/* Modal */
+.modal{display:none;position:fixed;z-index:3000;left:0;top:0;width:100%;height:100%;overflow:auto;background:rgba(0,0,0,0.45)}
+.modal-content{background:#fff;margin:6% auto;padding:18px;border-radius:12px;max-width:520px;box-shadow:0 20px 50px rgba(2,6,23,0.2)}
+.close-button{float:right;font-size:26px;color:#999;cursor:pointer}
+.wheel-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;padding:6px}
+.spinner{width:260px;height:260px;border-radius:50%;position:relative;overflow:hidden;background:linear-gradient(180deg,#fff,#f3f7fb);border:6px solid #ffd27a;display:flex;flex-wrap:wrap;justify-content:center;align-items:center}
+.wheel-segment{width:50%;height:50%;display:flex;align-items:center;justify-content:center;font-weight:800}
+.wheel-indicator{font-size:28px;color:var(--danger);margin-top:-10px}
+
+/* Logs, messages */
+.log{padding:8px;border-radius:8px;background:#f6f8fb;color:#1b2b3a;margin-bottom:8px}
+.log.success{background:#e8f9f0;color:#055d46}
+.log.error{background:#ffe9e9;color:#7a0c0c}
+.cooldown-message{color:var(--danger);font-weight:700;margin-top:8px;}
+
+/* Responsive */
+@media (max-width:1100px){
+    .main-layout{grid-template-columns: 220px 1fr;grid-template-rows:auto auto;max-width:960px}
+    #betslipArea{grid-column:1/-1;order:3;margin-top:10px}
+}
+@media (max-width:700px){
+    .main-layout{grid-template-columns:1fr;gap:12px;padding:12px}
+    #sidebar{display:none}
+    #betslipArea{order:10}
+    #impulse-banner{padding:24px 0}
+}
+
+/* --- Потребителско име горе вдясно --- */
+#currentUserName {
+    background: #f3f6fb;
+    border: 2px solid #dde3eb;
     border-radius: 8px;
-    padding: 5px 10px;
-    font-size: 0.9em;
-    font-weight: bold;
-    color: #f1c40f; 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
-}
-
-/* --- СТРУКТУРА НА ТРИТЕ КОЛОНИ --- */
-
-.main-layout {
-    display: flex;
-    padding-top: 50px; /* Отместване от topbar */
-    width: 100%;
-    min-height: calc(100vh - 50px);
-    position: relative; 
-}
-
-/* ⚙️ Стилизиране на Страничното Меню (Sidebar) */
-#sidebar {
-    width: 200px;
-    background-color: #2c3e50; /* Тъмен фон */
-    color: white;
-    padding-top: 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    position: sticky; /* Sticky за да стои на място при скрол */
-    top: 50px;
-    height: calc(100vh - 50px);
-    z-index: 1001;
-    display: flex;
-    flex-direction: column;
-}
-
-.bottom-menu-spacer {
-    margin-top: auto; /* Избутва "Правила и условия" най-отдолу */
-}
-
-/* Стилизиране на Баланса в Страничното Меню (КВАДРАТЧЕТО) */
-.sidebar-balance {
-    background-color: #34495e; 
-    border: 1px solid #1abc9c; 
-    border-radius: 8px; 
-    margin: 0 10px 20px 10px; 
-    padding: 15px 10px;
+    padding: 6px 12px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #1a1f27;
+    min-width: 80px;
     text-align: center;
-    font-size: 1.3em; 
-    font-weight: bold;
-    color: #f1c40f; 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
 }
 
-.menu-button {
-    display: block;
-    width: 90%;
-    padding: 15px 10px;
-    margin: 5px auto;
-    background-color: #34495e; 
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: left;
-    font-size: 1em;
-    transition: background-color 0.3s;
+#currentUserName.logged-user {
+    background: linear-gradient(90deg, #1abc9c, #16a085);
+    color: #fff;
+    border-color: #139b7a;
+    box-shadow: 0 4px 10px rgba(22,160,133,0.25);
 }
 
-.menu-button.active, .menu-button:hover {
-    background-color: #1abc9c; 
-}
-
-/* 🎲 Стилизиране на Основната Област */
-#content-area {
-    flex-grow: 1;
-    padding: 20px;
-    margin-left: 0; 
-    background-color: #f4f4f4; 
-    transition: max-width 0.3s, margin-right 0.3s;
-}
-
-/* Клас за скриване/показване на секциите */
-.content-section {
-    display: none;
-}
-.content-section.active {
-    display: block;
-}
-
-/* --- БАНЕР (НОВА ВИЗИЯ) --- */
-#impulse-banner {
-    background: linear-gradient(90deg, #3498db, #1abc9c); 
-    color: white;
-    padding: 20px 40px;
-    margin-bottom: 25px;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.banner-text-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.impulse-main-text {
-    font-size: 3em;
-    font-weight: 900;
-    letter-spacing: 2px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.impulse-sub-text {
-    font-size: 1.2em;
-    margin-top: -5px;
-    font-style: italic;
-}
-
-
-/* --- ИНФО СЕКЦИИ (НАЧАЛО И ПРАВИЛА) --- */
-.info-card {
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.prize-card {
-    border-left: 5px solid #f1c40f;
-}
-
-.info-card ul {
-    list-style: none;
-    padding: 0;
-}
-.info-card li {
-    padding: 5px 0;
-    font-weight: bold;
-    border-bottom: 1px dotted #ccc;
-}
-.info-card li:last-child {
-    border-bottom: none;
-}
-.small-text {
-    font-size: 0.85em;
-    color: #7f8c8d;
-}
-
-/* --- ФИШ ЗА ЗАЛОЗИ (BETSLIP) - ДИНАМИЧЕН --- */
-
-.betslip-area {
-    flex-basis: 0; /* По подразбиране е скрит */
-    min-width: 0;
-    opacity: 0;
-    overflow: hidden;
-    background-color: #ffffff; 
-    border-left: 1px solid #ddd;
-    padding: 0; /* Премахваме падинга когато е скрит */
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
-    transition: flex-basis 0.3s, min-width 0.3s, opacity 0.3s, padding 0.3s;
-}
-
-.betslip-area.visible {
-    flex-basis: 300px; /* Показваме го */
-    min-width: 300px;
-    opacity: 1;
-    padding: 20px;
-}
-
-/* Дизайн на фиша в Залози */
-.betslip-list-container {
-    border: 1px solid #3498db;
-    border-radius: 6px;
-    padding: 10px;
-    margin-bottom: 15px;
-    background-color: #ecf0f1;
-}
-
-.betslip-item {
-    border-bottom: 1px dashed #3498db;
-    padding: 8px 0;
-}
-.betslip-item:last-child {
-    border-bottom: none;
-}
-.remove-bet-btn {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.8em;
-    margin-top: 5px;
-}
-
-.betslip-summary p {
-    margin: 5px 0;
-    font-weight: bold;
-}
-.bet-input-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
-.betting-input {
-    flex-grow: 1;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-.bet-place-button {
-    padding: 8px 12px;
-}
-
-/* --- МАЧОВЕ И КОЕФИЦИЕНТИ --- */
-
-.match-card {
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.odds-container {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.odd-button {
-    flex-grow: 1;
-    padding: 10px 5px;
-    border: 1px solid #3498db;
-    background-color: #ecf0f1;
-    color: #2c3e50;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-    font-size: 0.9em;
-}
-
-.odd-button:hover:not(.disabled) {
-    background-color: #3498db;
-    color: white;
-}
-
-.odd-button.selected {
-    background-color: #e67e22; 
-    color: white;
-    border-color: #d35400;
-}
-
-.odd-button.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* --- БУТОНИ И СЪОБЩЕНИЯ --- */
-
-.action-button {
-    background-color: #2ecc71; 
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.action-button:disabled {
-    background-color: #95a5a6;
-    cursor: not-allowed;
-}
-
-.cash-out-btn {
-    background-color: #f39c12; /* Оранжев цвят */
-    margin-top: 0;
-    padding: 5px 8px; 
-    width: auto;
-    font-size: 0.8em;
-    white-space: nowrap; 
-}
-
-.cooldown-message {
-    font-size: 0.9em;
-    font-style: italic;
-    margin-top: 5px;
-    color: #e67e22;
-}
-
-.large-timer {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #c0392b;
-    margin: 10px 0;
-}
-
-/* --- БОНУС КОЛЕЛО (СЕКЦИЯ) --- */
-
-.wheel-info-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
-    margin-bottom: 25px;
-    padding: 15px;
-    background-color: #e6f0ff;
-    border-radius: 8px;
-    border: 1px solid #3498db;
-}
-
-.wheel-prize-list ul {
-    list-style: disc;
-    padding-left: 20px;
-}
-
-.wheel-countdown-box {
-    text-align: center;
-    padding: 10px;
-}
-.wheel-modal-open-area {
-    background-color: #ffffff;
-    padding: 20px;
-    text-align: center;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-.modal-spin-button {
-    font-size: 1.1em;
-    padding: 12px 20px;
-    margin: 10px 0;
-}
-
-
-/* --- МОДАЛЕН ПРОЗОРЕЦ И КОЛЕЛО --- */
-/* Стиловете за модала са същите, добавяме стилове само за сегментите */
-
-#actualWheelContainer {
-    position: relative;
-    width: 300px;
-    height: 300px;
-    margin: 30px auto;
-    border-radius: 50%;
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    background-color: #2c3e50; 
-    border: 10px solid #f1c40f;
-}
-
-.spinner {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    transition: transform 0s; 
-}
-
-.wheel-segment {
-    position: absolute;
-    width: 150%;
-    height: 150%;
-    /* 10 Сегмента: 360/10 = 36 градуса на сегмент */
-    clip-path: polygon(50% 50%, 50% 0%, 94.2% 1.4%, 90% 10%); 
-    transform-origin: 50% 50%;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding-top: 15px;
-    font-size: 1.3em;
-    font-weight: bold;
-    color: white;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    box-sizing: border-box;
-}
-
-/* Цветове на 10-те сегмента за 100, 200, 500, 1000 */
-#actualWheelContainer .wheel-segment:nth-child(1) { background-color: #f1c40f; color: #2c3e50; transform: rotate(0deg); } /* 100 */
-#actualWheelContainer .wheel-segment:nth-child(2) { background-color: #2ecc71; transform: rotate(36deg); } /* 200 */
-#actualWheelContainer .wheel-segment:nth-child(3) { background-color: #e67e22; transform: rotate(72deg); } /* 500 */
-#actualWheelContainer .wheel-segment:nth-child(4) { background-color: #c0392b; transform: rotate(108deg); } /* 1000 */
-
-#actualWheelContainer .wheel-segment:nth-child(5) { background-color: #f39c12; color: #2c3e50; transform: rotate(144deg); } /* 100 */
-#actualWheelContainer .wheel-segment:nth-child(6) { background-color: #1abc9c; transform: rotate(180deg); } /* 200 */
-#actualWheelContainer .wheel-segment:nth-child(7) { background-color: #d35400; transform: rotate(216deg); } /* 500 */
-#actualWheelContainer .wheel-segment:nth-child(8) { background-color: #e74c3c; transform: rotate(252deg); } /* 1000 */
-
-#actualWheelContainer .wheel-segment:nth-child(9) { background-color: #f1c40f; color: #2c3e50; transform: rotate(288deg); } /* 100 */
-#actualWheelContainer .wheel-segment:nth-child(10) { background-color: #2ecc71; transform: rotate(324deg); } /* 200 */
-
-.wheel-indicator {
-    position: absolute;
-    top: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 2.5em;
-    color: #e74c3c; 
-    z-index: 10;
-}
-
-/* --- СТИЛОВЕ ЗА ТАБЛИЦАТА С АКТИВНИ ЗАЛОЗИ (MY BETS) и КЛАСИРАНЕТО --- */
-
-.bets-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-    font-size: 0.9em;
-}
-
-.bets-table th, .bets-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-    vertical-align: middle; 
-}
-
-.bets-table th {
-    background-color: #34495e;
-    color: white;
-    font-weight: bold;
-}
-
-.bets-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.bets-table td:nth-child(2) {
-    text-align: left; 
-    font-size: 0.8em;
-}
-
-.bet-selection-item {
-    display: block;
-    padding: 2px 0;
-}
-
-.bet-status-cell {
-    font-weight: bold;
-}
-
-.bet-status-очакване { background-color: #e8f3ff; border-left: 5px solid #3498db; }
-.bet-status-печеливш { background-color: #e6fff1; border-left: 5px solid #2ecc71; }
-.bet-status-губещ { background-color: #ffe6e6; border-left: 5px solid #e74c3c; }
-.bet-status-уредено { background-color: #fff9e6; border-left: 5px solid #f39c12; }
-
-.bet-status-очакване .bet-status-cell { color: #3498db; }
-.bet-status-печеливш .bet-status-cell { color: #2ecc71; }
-.bet-status-губещ .bet-status-cell { color: #e74c3c; }
-.bet-status-уредено .bet-status-cell { color: #f39c12; }
-
-/* Стил за потребителя в класирането */
-#rankingTable .ranking-user-row {
-    background-color: #fff9e6; /* Леко жълто за да се отличава */
-    border: 2px solid #f1c40f;
-    font-weight: bold;
-}
-#rankingTable .ranking-user-row td {
-    color: #c0392b; 
+#currentUserName:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
 }
