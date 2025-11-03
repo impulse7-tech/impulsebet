@@ -1,198 +1,209 @@
 <!DOCTYPE html>
 <html lang="bg">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Impulse Bet: Футболни Залози</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Impulse Bet — Демо</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+    <header id="topbar">
+        <div class="top-left">
+            <img src="impulse_logo.svg" alt="Impulse Bet" class="top-logo" onerror="this.style.display='none'">
+            <div class="brand">IMPULSE BET</div>
+        </div>
+        <div class="top-right">
+            <div id="realTimeClock" class="clock"></div>
+            <div id="currentUserName" class="mini-user">Гост</div>
+        </div>
+    </header>
 
-    <div id="topbar">
-        <img src="impulse_logo.svg" alt="Impulse Bet Logo" class="top-logo">
-        <div id="realTimeClock" class="score-area clock-area"></div> 
-    </div>
+    <section id="impulse-banner">
+        <div class="banner-inner">
+            <h1>IMPULSE BET</h1>
+            <p class="subtitle">Завърти. Рискувай. Спечели. (Демо с точки)</p>
+        </div>
+    </section>
 
-    <div class="main-layout">
-
-        <div id="sidebar">
-            
-            <div id="sidebarBalance" class="score-area sidebar-balance">
-                Баланс: <span id="userPoints">1000</span> Точки
+    <main class="main-layout">
+        <aside id="sidebar">
+            <div id="sidebarBalance" class="sidebar-card">
+                <div class="balance-label">Баланс</div>
+                <div class="balance-amount"><span id="userPoints">1000.00</span> <small>точки</small></div>
+                <div class="small">Потребител: <span id="currentUserNameDisplay">Гост</span></div>
             </div>
-            
-            <button class="menu-button" data-target="home-area">🏠 Начало</button>
-            <button class="menu-button active" data-target="betting-area">⚽ Залози</button>
-            <button class="menu-button" data-target="my-bets-area">📜 Моите Залози</button>
-            <button class="menu-button" data-target="ranking-area">🏆 Класиране</button>
-            <button class="menu-button" data-target="wheel-area" id="openWheelModalButton">
-                🎡 Бонус колело
-            </button>
-            
-            <div class="bottom-menu-spacer"></div>
-            <button class="menu-button" data-target="rules-area">📑 Правила и условия</button>
-            </div>
 
-        <div id="content-area">
-            
-            <div id="home-area" class="content-section">
-                
-                <div id="impulse-banner">
-                    <div class="banner-text-wrapper">
-                        <span class="impulse-main-text">IMPULSE BET</span>
-                        <span class="impulse-sub-text">Завърти, Рискувай, Спечели!</span>
-                    </div>
-                </div>
-                
-                <h2>🏠 Добре дошли в Impulse Bet!</h2>
+            <nav class="menu">
+                <button class="menu-button" data-target="home-area">🏠 Начало</button>
+                <button class="menu-button" data-target="account-area">👤 Акаунт</button>
+                <button class="menu-button active" data-target="betting-area">⚽ Залози</button>
+                <button class="menu-button" data-target="my-bets-area">📜 Моите Залози</button>
+                <button class="menu-button" data-target="ranking-area">🏆 Класация</button>
+                <button class="menu-button" data-target="wheel-area" id="openWheelModalButton">🎡 Дневен Бонус</button>
+            </nav>
+
+            <div class="sidebar-card small-card">
+                <div class="card-title"></div>
+            </div>
+        </aside>
+
+        <section id="content-area">
+            <article id="home-area" class="content-section">
+                <h2>Добре дошли в Impulse Bet (Демо)</h2>
                 <div class="info-card">
-                    <p>Този сайт е създаден единствено с **цел забавление** и не включва залози с реални пари.</p>
-                    <p>Използвате **точки**, които може да печелите чрез залози и бонуси, за да се състезавате с другите участници.</p>
+                    <p>Тук играете само с виртуални точки за забавление. Всички резултати са симулирани.</p>
+                </div>
+            </article>
+
+            <article id="account-area" class="content-section">
+                <h2>Акаунт</h2>
+
+                <div id="loggedInStatus" class="info-card" style="display:none;">
+                    <h3>Добре дошъл, <span id="currentUserNameDisplayLogged">Гост</span>!</h3>
+                    <p>Баланс: <strong><span id="userPointsDisplay_2">1000.00</span></strong> точки</p>
+                    <button id="logoutButton" class="action-button danger">❌ Изход</button>
                 </div>
 
-                <h3>💸 Месечна Награда</h3>
-                <div class="info-card prize-card">
-                    <p>В края на всеки месец участникът с **най-много събрани точки** печели парична награда!</p>
-                    <ul>
-                        <li>🥇 **1-во място:** 500 лв.</li>
-                        <li>🥈 **2-ро място:** 350 лв.</li>
-                        <li>🥉 **3-то място:** 150 лв.</li>
-                    </ul>
-                    <p class="small-text">* За да участвате, моля, прочетете "Правила и условия".</p>
-                </div>
-            </div>
+                <div id="registrationFormArea" class="info-card">
+                    <h3>Влез или Регистрирай се</h3>
 
-            <div id="betting-area" class="content-section active">
-                
-                <div id="impulse-banner">
-                    <div class="banner-text-wrapper">
-                        <span class="impulse-main-text">IMPULSE BET</span>
-                        <span class="impulse-sub-text">Завърти, Рискувай, Спечели!</span>
-                    </div>
-                </div>
-                <h2>⚽ Футболни Срещи (Шампионска Лига)</h2>
-                <div id="matchesList">
-                    <p>Зареждане на мачовете...</p>
-                </div>
-            </div>
+                    <div id="accountMessage" class="log" style="min-height:24px;"></div>
 
-            <div id="my-bets-area" class="content-section">
-                <h2>📜 Моите Залози</h2>
+                    <form id="loginForm" class="auth-form">
+                        <label for="loginUserName">Потребителско име</label>
+                        <input type="text" id="loginUserName" minlength="3" required>
+                        <label for="loginPassword">Парола</label>
+                        <input type="password" id="loginPassword" minlength="4" required>
+                        <div class="form-row">
+                            <button type="submit" class="action-button">🔐 Влез</button>
+                        </div>
+                    </form>
+
+                    <hr class="divider">
+
+                    <form id="registerForm" class="auth-form">
+                        <label for="newUserName">Потребителско име</label>
+                        <input type="text" id="newUserName" minlength="3" required>
+                        <label for="newPassword">Парола</label>
+                        <input type="password" id="newPassword" minlength="4" required>
+                        <label for="userFirstName">Име (по желание)</label>
+                        <input type="text" id="userFirstName">
+                        <label for="userLastName">Фамилия (по желание)</label>
+                        <input type="text" id="userLastName">
+                        <label for="userEmail">Имейл (по желание)</label>
+                        <input type="email" id="userEmail">
+                        <div class="form-row">
+                            <button type="submit" id="createUserButton" class="action-button">📝 Регистрирай се</button>
+                        </div>
+                    </form>
+                </div>
+            </article>
+
+            <article id="betting-area" class="content-section active">
+                <h2>Футболни срещи</h2>
+                <div id="matchesList" class="matches-list">
+                    <p class="muted">Зареждане на срещите...</p>
+                </div>
+            </article>
+
+            <article id="my-bets-area" class="content-section">
+                <h2>Моите залози</h2>
                 <div class="tabs-container">
-                    <button class="tab-button active" data-tab="unsettled">Неуредени</button>
+                    <button class="tab-button active" data-tab="unsettled">Очакващи</button>
                     <button class="tab-button" data-tab="settled">Уредени</button>
                 </div>
-                <div id="unsettledBetsList" class="tab-content active log">
-                    <p>Няма активни (неуредени) залози.</p>
-                </div>
-                <div id="settledBetsList" class="tab-content log">
-                    <p>Няма уредени залози.</p>
-                </div>
-                <p style="margin-top: 10px; font-style: italic;">Бутонът "Затвори Залог" (Cash Out) се появява под всеки неуреден залог.</p>
-            </div>
-            
-            <div id="ranking-area" class="content-section">
-                <h2>🏆 Класиране (Топ 10)</h2>
-                <p>Базирано на общия брой натрупани точки.</p>
-                <div id="rankingList">
-                    <p>Зареждане на класирането...</p>
-                </div>
-            </div>
 
-            <div id="wheel-area" class="content-section">
-                <h2>🎡 Бонус колело</h2>
-                
-                <div class="wheel-info-container">
-                    <div class="wheel-prize-list">
-                        <h3>Награди:</h3>
-                        <ul>
-                            <li>100 Точки</li>
-                            <li>200 Точки</li>
-                            <li>500 Точки</li>
-                            <li>1000 Точки</li>
-                        </ul>
-                    </div>
-                    <div class="wheel-countdown-box">
-                        <h3>Следващо завъртане:</h3>
-                        <p id="modalWheelCooldown" class="cooldown-message large-timer"></p> 
-                    </div>
+                <div id="unsettled" class="tab-content active">
+                    <table class="bets-table">
+                        <thead>
+                            <tr><th>Залог #</th><th>Селекции</th><th>Коеф.</th><th>Сума</th><th>Пот. печалба</th><th>Действие</th></tr>
+                        </thead>
+                        <tbody id="unsettledBetsList"></tbody>
+                    </table>
                 </div>
 
-                <div class="wheel-modal-open-area">
-                    <p>Натиснете бутона по-долу, за да завъртите колелото и спечелите своя седмичен бонус!</p>
-                    <button id="spinWheelInPageButton" class="action-button modal-spin-button">Отвори Бонус колелото</button>
-                    <p id="pageWheelResult" class="log" style="text-align: center; min-height: 20px;"></p>
+                <div id="settled" class="tab-content">
+                    <table class="bets-table">
+                        <thead>
+                            <tr><th>Залог #</th><th>Селекции</th><th>Коеф.</th><th>Сума</th><th>Резултат</th><th>Статус</th></tr>
+                        </thead>
+                        <tbody id="settledBetsList"></tbody>
+                    </table>
                 </div>
-            </div>
-            
-            <div id="rules-area" class="content-section">
-                <h2>📑 Правила и условия за участие</h2>
+            </article>
+
+            <article id="ranking-area" class="content-section">
+                <h2>Топ Класация</h2>
+                <div id="rankingList" class="info-card">
+                    <p class="muted">Зареждане...</p>
+                </div>
+            </article>
+
+            <article id="wheel-area" class="content-section">
+                <h2>Колело (Бонус)</h2>
                 <div class="info-card">
-                    <p>Impulse Bet е платформа за **симулация на залози** (Fun Betting). Участието е безплатно и е с цел забавление и демонстрация.</p>
-                    <h3>Условия за класиране (Месечна Награда):</h3>
-                    <ol>
-                        <li>**Цел:** Да бъдеш участникът с най-много точки в края на календарния месец.</li>
-                        <li>**Активност:** Участникът трябва да има поне 5 направени залога през месеца.</li>
-                        <li>**Възраст:** Участникът трябва да е навършил 18 години.</li>
-                        <li>**Един Профил:** Разрешено е участие само с един профил (баланс с точки).</li>
-                        <li>**Fair Play:** Всякакви опити за манипулиране на резултатите или използване на софтуер за автоматизация ще доведат до дисквалификация.</li>
-                    </ol>
-                    <p>Класирането се обновява в реално време, но финалните резултати се обявяват на 1-во число от новия месец.</p>
+                    <p>Може да завъртите колелото веднъж на 24 часа за допълнителни точки.</p>
+                    <div id="pageWheelResult" class="log" style="min-height:22px;"></div>
+                    <div style="margin-top:10px;">
+                        <button id="spinWheelPageButton" class="action-button">Завърти (страница)</button>
+                        <div id="modalWheelCooldown" class="cooldown-message"></div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <aside id="betslipArea">
+            <div id="betslipTitle">Комбиниран Фиш <span id="betslipCount">(0)</span></div>
+            <div id="betslipMessage" class="log" style="min-height:20px;"></div>
+            <div class="betslip-content-wrapper">
+                <ul id="betslipList" class="betslip-list">
+                    <li class="empty-message">Няма избрани срещи.</li>
+                </ul>
+
+                <div class="betslip-summary">
+                    <div class="summary-row">
+                        <span>Общ коеф.:</span><span id="totalOdd">1.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <label for="combinedBetAmount">Сума (мин. 10)</label>
+                        <input type="number" id="combinedBetAmount" value="10" min="10">
+                    </div>
+                    <div class="summary-row total-win-row">
+                        <span>Потенциална печалба:</span><span id="potentialWin">0.00</span>
+                    </div>
+                    <button id="placeCombinedBetButton" class="action-button" disabled>Направи залог</button>
                 </div>
             </div>
+        </aside>
+    </main>
 
-        </div> 
-        
-        <div class="betslip-area" id="betslipArea">
-            <h2>📝 Вашият Фиш</h2>
-            <div id="betslipList" class="log betslip-list-container">
-                <p>Няма избрани селекции.</p>
-            </div>
-            
-            <div id="betslipSummary" class="betslip-summary">
-                <p>Общ Коефициент: <span id="totalOdd">1.00</span></p>
-                <p>Потенциална Печалба: <span id="potentialWin">0</span> Точки</p>
-                
-                <div class="bet-input-group">
-                    <input type="number" id="combinedBetAmount" min="10" placeholder="Залог (мин. 10)" class="betting-input">
-                    <button id="placeCombinedBetButton" class="action-button bet-place-button" disabled>
-                        Заложи
-                    </button>
-                </div>
-            </div>
-            <div id="betslipMessage" class="cooldown-message"></div>
-        </div>
-
-    </div> 
-    
+    <!-- Модален прозорец за колело -->
     <div id="wheelModal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
-            
-            <div id="wheelBanner">БОНУС КОЛЕЛО</div>
-
-            <div id="actualWheelContainer" style="text-align: center; margin: 20px auto;">
+            <h3>Бонус Колело</h3>
+            <div id="actualWheelContainer" class="wheel-wrap">
                 <div id="spinner" class="spinner">
+                    <!-- визуални сегменти (CSS) -->
                     <div class="wheel-segment" data-reward="100">100</div>
                     <div class="wheel-segment" data-reward="200">200</div>
                     <div class="wheel-segment" data-reward="500">500</div>
                     <div class="wheel-segment" data-reward="1000">1000</div>
-                    <div class="wheel-segment" data-reward="100">100</div>
-                    <div class="wheel-segment" data-reward="200">200</div>
-                    <div class="wheel-segment" data-reward="500">500</div>
-                    <div class="wheel-segment" data-reward="1000">1000</div>
-                    <div class="wheel-segment" data-reward="100">100</div>
-                    <div class="wheel-segment" data-reward="200">200</div>
+                    <div class="wheel-segment" data-reward="50">50</div>
+                    <div class="wheel-segment" data-reward="150">150</div>
+                    <div class="wheel-segment" data-reward="300">300</div>
+                    <div class="wheel-segment" data-reward="400">400</div>
                 </div>
-                <div class="wheel-indicator">▼</div> 
+                <div class="wheel-indicator">▼</div>
             </div>
-            
-            <p id="modalWheelResult" class="log" style="text-align: center; min-height: 20px;">Натиснете "Завърти" за да спечелите точки!</p>
-            <button id="spinWheelButton" class="action-button modal-spin-button">Завърти</button>
-            
+            <p id="modalWheelResult" class="log" style="min-height:30px;">Натиснете "Завърти" за да спечелите точки!</p>
+            <p id="modalWheelCooldown" class="cooldown-message"></p>
+            <div style="text-align:center;">
+                <button id="spinWheelButton" class="action-button">Завърти</button>
+            </div>
         </div>
     </div>
-    
+
     <script src="script.js"></script>
 </body>
 </html>
