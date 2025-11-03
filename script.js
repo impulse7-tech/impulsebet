@@ -772,3 +772,39 @@ document.addEventListener('DOMContentLoaded', async ()=>{
 
 /* expose some helpers for debugging in console */
 window.ImpulseBet = { initTournamentIfMissing, tournament, renderAll, saveCurrentUser, loadCurrentUser, calculateCashOutForBet };
+
+function updateCashOutValues() {
+  activeBets.forEach(bet => {
+    if (bet.status === 'Очакване') {
+      // Проверяваме дали някой от мачовете в залога е "На живо"
+      let match = bet.selections.find(s => {
+        return matchesData.find(m => m.home === s.home && m.away === s.away && m.status === 'На живо');
+      });
+
+      if (match) {
+        const m = matchesData.find(m => m.home === match.home && m.away === match.away);
+        if (m) {
+          // Проста логика: ако отборът води → cash out расте, ако губи → намалява
+          const myTeam = match.type.includes('1') ? m.home : (match.type.includes('2') ? m.away : null);
+          let diff = m.scoreHome - m.scoreAway;
+          let cashOutValue = bet.amount * 0.5; // базова стойност
+
+          if (diff > 0 && m.home === myTeam) cashOutValue = bet.amount * 1.2;
+          else if (diff < 0 && m.home === myTeam) cashOutValue = bet.amount * 0.3;
+          else if (diff > 0 && m.away === myTeam) cashOutValue = bet.amount * 1.2;
+          else if (diff < 0 && m.away === myTeam) cashOutValue = bet.amount * 0.3;
+
+          // ограничаваме до максимум потенциалната печалба
+          if (cashOutValue > bet.potentialWin) cashOutValue = bet.potentialWin;
+
+          // запазваме новата стойност
+          bet.currentCashOut = parseFloat(cashOutValue.toFixed(2));
+        }
+      }
+    }
+  });
+
+  renderActiveBets();
+}
+
+setInterval(updateCashOutValues, 60000);
