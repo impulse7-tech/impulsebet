@@ -1,0 +1,381 @@
+/* --- ОСНОВНИ СТИЛОВЕ --- */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4; /* Променен на светло сив фон */
+    color: #333;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* 🔝 Стилизиране на Горния Блок (Topbar) */
+#topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background-color: #ffffff; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1000;
+}
+
+.top-logo {
+    height: 40px; 
+    margin-right: auto;
+}
+
+/* Стилизиране на Часовника */
+#realTimeClock {
+    margin-left: auto; 
+    background-color: #34495e; 
+    border: 1px solid #1abc9c; 
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #f1c40f; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+}
+
+/* --- СТРУКТУРА НА ТРИТЕ КОЛОНИ --- */
+
+.main-layout {
+    display: flex;
+    padding-top: 50px; /* Отместване от topbar */
+    width: 100%;
+    min-height: calc(100vh - 50px);
+    position: relative; 
+}
+
+/* ⚙️ Стилизиране на Страничното Меню (Sidebar) */
+#sidebar {
+    width: 200px;
+    background-color: #2c3e50; /* Тъмен фон */
+    color: white;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: sticky; /* Sticky за да стои на място при скрол */
+    top: 50px;
+    height: calc(100vh - 50px);
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Стилизиране на Баланса в Страничното Меню (КВАДРАТЧЕТО) */
+.sidebar-balance {
+    background-color: #34495e; 
+    border: 1px solid #1abc9c; 
+    border-radius: 8px; 
+    margin: 0 10px 20px 10px; 
+    padding: 15px 10px;
+    text-align: center;
+    font-size: 1.3em; 
+    font-weight: bold;
+    color: #f1c40f; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+}
+
+.menu-button {
+    display: block;
+    width: 90%;
+    padding: 15px 10px;
+    margin: 5px auto;
+    background-color: #34495e; 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+.menu-button.active, .menu-button:hover {
+    background-color: #1abc9c; 
+}
+
+/* 🎲 Стилизиране на Основната Област */
+#content-area {
+    flex-grow: 1;
+    padding: 20px;
+    margin-left: 0; /* Вече не е фиксиран */
+    background-color: #f4f4f4; 
+    transition: max-width 0.3s, margin-right 0.3s;
+}
+
+/* Клас за скриване/показване на секциите */
+.content-section {
+    display: none;
+}
+.content-section.active {
+    display: block;
+}
+
+/* --- ФИШ ЗА ЗАЛОЗИ (BETSLIP) - ДИНАМИЧЕН --- */
+
+.betslip-area {
+    flex-basis: 0; /* По подразбиране е скрит */
+    min-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    background-color: #ffffff; 
+    border-left: 1px solid #ddd;
+    padding: 0; /* Премахваме падинга когато е скрит */
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
+    transition: flex-basis 0.3s, min-width 0.3s, opacity 0.3s, padding 0.3s;
+}
+
+.betslip-area.visible {
+    flex-basis: 300px; /* Показваме го */
+    min-width: 300px;
+    opacity: 1;
+    padding: 20px;
+}
+
+/* Дизайн на фиша в Залози */
+.betslip-list-container {
+    border: 1px solid #3498db;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 15px;
+    background-color: #ecf0f1;
+}
+
+.betslip-item {
+    border-bottom: 1px dashed #3498db;
+    padding: 8px 0;
+}
+.betslip-item:last-child {
+    border-bottom: none;
+}
+.remove-bet-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8em;
+    margin-top: 5px;
+}
+
+.betslip-summary p {
+    margin: 5px 0;
+    font-weight: bold;
+}
+.bet-input-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+.betting-input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.bet-place-button {
+    padding: 8px 12px;
+}
+
+/* --- МАЧОВЕ И КОЕФИЦИЕНТИ --- */
+
+.match-card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.odds-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.odd-button {
+    flex-grow: 1;
+    padding: 10px 5px;
+    border: 1px solid #3498db;
+    background-color: #ecf0f1;
+    color: #2c3e50;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    font-size: 0.9em;
+}
+
+.odd-button:hover:not(.disabled) {
+    background-color: #3498db;
+    color: white;
+}
+
+.odd-button.selected {
+    background-color: #e67e22; 
+    color: white;
+    border-color: #d35400;
+}
+
+.odd-button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* --- БУТОНИ И СЪОБЩЕНИЯ --- */
+
+.action-button {
+    background-color: #2ecc71; 
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.action-button:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+/* **ПОПРАВКА:** Бутон за Cash Out да се вижда цялото квадратче */
+.cash-out-btn {
+    background-color: #f39c12; /* Оранжев цвят */
+    margin-top: 0;
+    padding: 5px 8px; /* Намален падинг */
+    width: auto;
+    font-size: 0.8em;
+    white-space: nowrap; /* Не позволява пренасяне на текст */
+}
+
+.cooldown-message {
+    font-size: 0.9em;
+    font-style: italic;
+    margin-top: 5px;
+    color: #e67e22;
+}
+
+
+/* --- МОДАЛЕН ПРОЗОРЕЦ И КОЛЕЛО --- */
+
+/* ... (Стилове за модален прозорец и затваряне) ... */
+
+/* Стилове за симулирано колело */
+#actualWheelContainer {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 30px auto;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    background-color: #2c3e50; /* Фон на контейнера за по-добър контраст */
+    border: 10px solid #f1c40f;
+}
+
+.spinner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0s; 
+}
+
+.wheel-segment {
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    /* 10 Сегмента: 360/10 = 36 градуса на сегмент */
+    clip-path: polygon(50% 50%, 50% 0%, 94.2% 1.4%, 90% 10%); /* Променен clip-path за 10 сегмента */
+    transform-origin: 50% 50%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 15px;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: white;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+}
+
+/* Цветове на 10-те сегмента (36 градуса) */
+#actualWheelContainer .wheel-segment:nth-child(1) { background-color: #c0392b; transform: rotate(0deg); }
+#actualWheelContainer .wheel-segment:nth-child(2) { background-color: #3498db; transform: rotate(36deg); }
+#actualWheelContainer .wheel-segment:nth-child(3) { background-color: #2ecc71; transform: rotate(72deg); }
+#actualWheelContainer .wheel-segment:nth-child(4) { background-color: #f1c40f; color: #2c3e50; transform: rotate(108deg); }
+#actualWheelContainer .wheel-segment:nth-child(5) { background-color: #9b59b6; transform: rotate(144deg); }
+
+#actualWheelContainer .wheel-segment:nth-child(6) { background-color: #e74c3c; transform: rotate(180deg); }
+#actualWheelContainer .wheel-segment:nth-child(7) { background-color: #2980b9; transform: rotate(216deg); }
+#actualWheelContainer .wheel-segment:nth-child(8) { background-color: #16a085; transform: rotate(252deg); }
+#actualWheelContainer .wheel-segment:nth-child(9) { background-color: #d35400; transform: rotate(288deg); }
+#actualWheelContainer .wheel-segment:nth-child(10) { background-color: #8e44ad; transform: rotate(324deg); }
+
+.wheel-indicator {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2.5em;
+    color: #e74c3c; 
+    z-index: 10;
+}
+
+/* --- СТИЛОВЕ ЗА ТАБЛИЦАТА С АКТИВНИ ЗАЛОЗИ (MY BETS) --- */
+/* (Тази секция остава непроменена от предишната ви версия, тъй като там вече беше добре оформена като таблица) */
+
+.bets-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 0.9em;
+}
+
+.bets-table th, .bets-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    vertical-align: middle; 
+}
+
+.bets-table th {
+    background-color: #34495e;
+    color: white;
+    font-weight: bold;
+}
+
+.bets-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.bets-table td:nth-child(2) {
+    text-align: left; 
+    font-size: 0.8em;
+}
+
+.bet-selection-item {
+    display: block;
+    padding: 2px 0;
+}
+
+.bet-status-cell {
+    font-weight: bold;
+}
+
+.bet-status-очакване { background-color: #e8f3ff; border-left: 5px solid #3498db; }
+.bet-status-печеливш { background-color: #e6fff1; border-left: 5px solid #2ecc71; }
+.bet-status-губещ { background-color: #ffe6e6; border-left: 5px solid #e74c3c; }
+.bet-status-уредено { background-color: #fff9e6; border-left: 5px solid #f39c12; }
+
+.bet-status-очакване .bet-status-cell { color: #3498db; }
+.bet-status-печеливш .bet-status-cell { color: #2ecc71; }
+.bet-status-губещ .bet-status-cell { color: #e74c3c; }
+.bet-status-уредено .bet-status-cell { color: #f39c12; }
