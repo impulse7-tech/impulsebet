@@ -3,7 +3,6 @@ let userPoints = 1000;
 let betslipSelections = [];
 const MIN_BET = 10;
 // Колелото се върти в Петък от 12:00 ч. (10:00 UTC)
-const COOLDOWN_DURATION = 7 * 24 * 60 * 60 * 1000; // Вече няма значение, използваме проверка за Петък
 const FRIDAY_SPIN_HOUR = 12; // 12:00 часа
 let lastSpinTime = null;
 let matchesData = [];
@@ -23,16 +22,20 @@ const elements = {
     placeBetButton: document.getElementById('placeCombinedBetButton'),
     betslipMessage: document.getElementById('betslipMessage'),
     wheelModal: document.getElementById('wheelModal'),
-    openWheelButton: document.getElementById('openWheelModalButton'),
+    openWheelButton: document.getElementById('openWheelModalButton'), // Бутонът в менюто
+    spinWheelInPageButton: document.getElementById('spinWheelInPageButton'), // Бутонът в страницата "Бонус колело"
     closeButtons: document.querySelectorAll('.close-button'),
-    spinButton: document.getElementById('spinWheelButton'),
-    modalWheelResult: document.getElementById('modalWheelResult'),
-    modalWheelCooldown: document.getElementById('modalWheelCooldown'),
+    spinButton: document.getElementById('spinWheelButton'), // Бутонът в модала
+    modalWheelResult: document.getElementById('modalWheelResult'), // В модала
+    pageWheelResult: document.getElementById('pageWheelResult'), // В страницата
+    modalWheelCooldown: document.getElementById('modalWheelCooldown'), // За таймера в страницата
     unsettledBetsList: document.getElementById('unsettledBetsList'), 
     settledBetsList: document.getElementById('settledBetsList'),     
     spinner: document.getElementById('spinner'),
     realTimeClock: document.getElementById('realTimeClock'),
-    betslipArea: document.getElementById('betslipArea') // Добавяме фиша
+    betslipArea: document.getElementById('betslipArea'),
+    // НОВИ ЕЛЕМЕНТИ
+    tabButtons: document.querySelectorAll('.tabs-container .tab-button')
 };
 
 // --- Инициализация ---
@@ -44,24 +47,30 @@ document.addEventListener('DOMContentLoaded', () => {
     initMyBetsTabs(); 
     loadMatches();
     updatePoints(0); 
-    checkWheelCooldown();
     renderActiveBets(); 
+    renderRanking(); // Инициализираме класирането
     updateClock(); 
-    setInterval(updateClock, 1000); 
-    // Скриваме фиша при зареждане, ако няма селекции
+    // Започваме симулацията на мачове, ако сме на началната страница (по подразбиране)
+    if (document.querySelector('.content-section.active').id === 'betting-area') {
+        startMatchSimulation();
+    }
+    // Проверка на колелото на всяка секунда
+    checkWheelCooldown(); 
+    setInterval(() => {
+        updateClock();
+        checkWheelCooldown(false);
+    }, 1000); 
     toggleBetslipVisibility(false); 
 });
 
 // --- Функции за Играта и Баланса ---
 function loadGameData() {
-    // ... (без промяна)
     lastSpinTime = localStorage.getItem('lastSpinTime') ? parseInt(localStorage.getItem('lastSpinTime')) : null;
     userPoints = localStorage.getItem('userPoints') ? parseInt(localStorage.getItem('userPoints')) : 1000;
     activeBets = localStorage.getItem('activeBets') ? JSON.parse(localStorage.getItem('activeBets')) : [];
 }
 
 function saveGameData() {
-    // ... (без промяна)
     localStorage.setItem('userPoints', userPoints);
     localStorage.setItem('activeBets', JSON.stringify(activeBets));
     if (lastSpinTime) {
@@ -70,14 +79,12 @@ function saveGameData() {
 }
 
 function updatePoints(amount) {
-    // ... (без промяна)
     userPoints += amount;
     elements.userPointsDisplay.textContent = userPoints; 
     saveGameData();
 }
 
 function displayMessage(element, message, isError = false) {
-    // ... (без промяна)
     element.textContent = message;
     element.style.color = isError ? '#e74c3c' : '#2ecc71';
     setTimeout(() => {
@@ -87,22 +94,15 @@ function displayMessage(element, message, isError = false) {
 
 // --- Управление на Часовника ---
 function updateClock() {
-    // ... (без промяна)
     const now = new Date();
     const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
     const formattedDate = now.toLocaleString('bg-BG', options).replace('.,', ',');
     elements.realTimeClock.textContent = formattedDate;
-    
-    // Проверка за колелото при всяко обновяване на часа
-    if (elements.wheelModal.style.display === 'block') {
-        checkWheelCooldown(false);
-    }
 }
 
 // --- Управление на Менюто и Табовете ---
 
 function initMenuSwitching() {
-    // ... (без промяна, освен че вече не премахва класа active от колелото)
     elements.menuButtons.forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.getAttribute('data-target');
@@ -116,47 +116,49 @@ function initMenuSwitching() {
             }
             button.classList.add('active');
 
-            if (targetId === 'wheel-area') {
-                elements.wheelModal.style.display = 'block';
-                document.getElementById('betting-area').classList.add('active');
-                button.classList.remove('active');
-            }
+            // Специална логика за "Залози" и "Бонус колело"
+            const isBettingArea = targetId === 'betting-area';
             
-            if (targetId === 'betting-area') {
+            if (isBettingArea) {
                 if (!matchInterval) startMatchSimulation();
-                // При влизане в "Залози" - проверява дали да покаже фиша
                 toggleBetslipVisibility(betslipSelections.length > 0);
             } else {
                 clearInterval(matchInterval);
                 matchInterval = null;
-                // При излизане от "Залози" - скрива фиша
                 toggleBetslipVisibility(false); 
+            }
+            
+            // Затваряне на модала, ако сме сменили секцията
+            if (elements.wheelModal.style.display === 'block' && targetId !== 'wheel-area') {
+                 elements.wheelModal.style.display = 'none';
+            }
+            
+            // Ако отиваме на "Класиране", опресняваме го
+            if (targetId === 'ranking-area') {
+                renderRanking();
             }
         });
     });
-    
-    if (document.getElementById('betting-area').classList.contains('active')) {
-        startMatchSimulation();
-    }
 }
 
 function initMyBetsTabs() {
-    // ... (без промяна)
-    document.querySelectorAll('.tab-button').forEach(button => {
+    // FIX: Премахнахме querySelectorAll и използваме елементите от elements
+    elements.tabButtons.forEach(button => {
         button.addEventListener('click', () => {
             const targetTab = button.dataset.tab;
 
-            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            elements.tabButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('#my-bets-area .tab-content').forEach(content => content.classList.remove('active'));
 
             button.classList.add('active');
             document.getElementById(`${targetTab}BetsList`).classList.add('active');
         });
     });
+    // По подразбиране:
     document.getElementById('unsettledBetsList').classList.add('active');
 }
 
-// --- НОВА ФУНКЦИЯ: Показване/Скриване на Фиша ---
+// --- Показване/Скриване на Фиша ---
 function toggleBetslipVisibility(show) {
     if (show) {
         elements.betslipArea.classList.add('visible');
@@ -168,11 +170,18 @@ function toggleBetslipVisibility(show) {
 
 // --- Управление на Модалния Прозорец (Колело) ---
 function initModalHandlers() {
-    elements.openWheelButton.addEventListener('click', (e) => {
+    // Бутонът в менюто вече само превключва секцията, логиката е в initMenuSwitching
+    // Отваряне на модала от страницата
+    elements.spinWheelInPageButton.addEventListener('click', (e) => {
         e.preventDefault(); 
         elements.wheelModal.style.display = 'block';
+        // Показваме дали може да се върти
         checkWheelCooldown(); 
     });
+    
+    // Бутонът за завъртане в модала
+    elements.spinButton.addEventListener('click', spinWheel);
+
 
     elements.closeButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -185,15 +194,13 @@ function initModalHandlers() {
             elements.wheelModal.style.display = 'none';
         }
     });
-
-    elements.spinButton.addEventListener('click', spinWheel);
 }
 
 // --- Логика на Колелото ---
 
 function checkWheelCooldown(showMessage = true) {
     const now = new Date();
-    const day = now.getDay(); // 0 = Неделя, 5 = Петък, 6 = Събота
+    const day = now.getDay(); 
     const hours = now.getHours();
 
     // 1. Проверка дали вече е завъртяно този Петък
@@ -204,13 +211,13 @@ function checkWheelCooldown(showMessage = true) {
         nextFriday.setDate(now.getDate() + (5 - day + 7) % 7);
         nextFriday.setHours(FRIDAY_SPIN_HOUR, 0, 0, 0);
 
-        // Ако последното завъртане е било в Петък след 12ч. и е от същия или по-късен Петък
+        // Ако е било завъртяно след 12:00 ч. на последния Петък
         if (lastSpinDay === 5 && lastSpinDate.getTime() >= nextFriday.getTime() - (7 * 24 * 60 * 60 * 1000) ) {
-             // Търсим следващия Петък, за да покажем обратно броене
+             // Търсим следващия Петък
              const nextSpin = new Date(nextFriday.getTime() + 7 * 24 * 60 * 60 * 1000);
              
              elements.spinButton.disabled = true;
-             elements.openWheelButton.disabled = true;
+             elements.spinWheelInPageButton.disabled = true;
 
              const timeRemaining = nextSpin.getTime() - now.getTime();
              const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
@@ -218,8 +225,8 @@ function checkWheelCooldown(showMessage = true) {
              const mins = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
              const secs = Math.floor((timeRemaining % (1000 * 60)) / 1000);
 
-             const timeString = `Следващо завъртане: ${days}д ${hrs}ч ${mins}м ${secs}с (Следващ Петък)`;
-             if (showMessage) elements.modalWheelCooldown.textContent = timeString;
+             const timeString = `${days}д ${hrs}ч ${mins}м ${secs}с`;
+             elements.modalWheelCooldown.textContent = timeString;
              return;
         }
     }
@@ -227,11 +234,11 @@ function checkWheelCooldown(showMessage = true) {
     // 2. Проверка дали е Петък и дали е 12:00 или по-късно
     if (day === 5 && hours >= FRIDAY_SPIN_HOUR) {
         elements.spinButton.disabled = false;
-        elements.openWheelButton.disabled = false;
-        if (showMessage) elements.modalWheelCooldown.textContent = '🎉 Готово за завъртане този Петък!';
+        elements.spinWheelInPageButton.disabled = false;
+        elements.modalWheelCooldown.textContent = '🎉 Време е за завъртане!';
     } else {
         elements.spinButton.disabled = true;
-        elements.openWheelButton.disabled = true;
+        elements.spinWheelInPageButton.disabled = true;
         
         // Изчисляване на времето до следващия Петък в 12:00 ч.
         const nextFriday = new Date(now);
@@ -244,8 +251,8 @@ function checkWheelCooldown(showMessage = true) {
         const mins = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
         const secs = Math.floor((timeRemaining % (1000 * 60)) / 1000);
         
-        const timeString = `Достъпно: Всеки Петък от 12:00 ч. (Остава: ${days}д ${hrs}ч ${mins}м ${secs}с)`;
-        if (showMessage) elements.modalWheelCooldown.textContent = timeString;
+        const timeString = `${days}д ${hrs}ч ${mins}м ${secs}с`;
+        elements.modalWheelCooldown.textContent = timeString;
     }
 }
 
@@ -256,8 +263,8 @@ function spinWheel() {
     lastSpinTime = Date.now();
     saveGameData();
 
-    // НОВИ печалби: 50, 100, 200, 500, 1000
-    const rewards = [50, 100, 200, 500, 1000, 50, 100, 200, 500, 1000]; // 10 сегмента
+    // НОВИ печалби: 100, 200, 500, 1000 (повторени 10 пъти)
+    const rewards = [100, 200, 500, 1000, 100, 200, 500, 1000, 100, 200]; 
     const totalSegments = rewards.length;
     const winningIndex = Math.floor(Math.random() * totalSegments);
     const winningReward = rewards[winningIndex];
@@ -274,16 +281,20 @@ function spinWheel() {
         elements.spinner.style.transition = 'none';
         
         updatePoints(winningReward);
-        elements.modalWheelResult.textContent = `🎉 Честито! Спечелихте ${winningReward} Точки!`;
-
+        
+        const resultText = `🎉 Честито! Спечелихте ${winningReward} Точки!`;
+        elements.modalWheelResult.textContent = resultText;
+        elements.pageWheelResult.textContent = resultText; // Показваме резултата и на страницата
+        
+        elements.wheelModal.style.display = 'none'; // Затваряме модала след завъртане
+        
         checkWheelCooldown();
     }, 4500); 
 }
 
 // --- Логика за Футболните Мачове, Фиша и Уреждането ---
-
+// (Останалите функции за мачове, залози и уреждане са запазени без промяна)
 function createMockMatches() {
-    // ... (без промяна, мачовете от 04.11.2025 са запазени)
     const date = "2025-11-04"; 
     const time2200 = "T22:00:00+02:00"; 
     const time1945 = "T19:45:00+02:00"; 
@@ -321,13 +332,11 @@ function createMockMatches() {
 }
 
 function loadMatches() {
-    // ... (без промяна)
     matchesData = createMockMatches();
     renderMatches();
 }
 
 function renderMatches() {
-    // ... (без промяна)
     elements.matchesList.innerHTML = '';
     
     matchesData.forEach(match => {
@@ -365,7 +374,6 @@ function renderMatches() {
 }
 
 function renderOddButton(match, selection, label, odd) {
-    // ... (без промяна)
     const disabledClass = match.status !== 'Not Started' ? 'disabled' : ''; 
     const selectedClass = betslipSelections.some(s => s.matchId === match.id && s.selection === selection) ? 'selected' : '';
     
@@ -382,7 +390,6 @@ function renderOddButton(match, selection, label, odd) {
 }
 
 function startMatchSimulation() {
-    // ... (без промяна)
     matchInterval = setInterval(() => {
         checkAndSettleBets();
         if (document.getElementById('betting-area').classList.contains('active')) {
@@ -392,7 +399,6 @@ function startMatchSimulation() {
 }
 
 function handleSelection(event) {
-    // ... (запазена логика за добавяне на селекция)
     const button = event.currentTarget;
     const matchId = parseInt(button.dataset.matchId);
     const selection = button.dataset.selection;
@@ -417,27 +423,23 @@ function handleSelection(event) {
 
     renderBetslip();
     renderMatches();
-    // **НОВО:** Показва фиша веднага, щом се добави селекция
     toggleBetslipVisibility(true); 
 }
 
 function removeSelection(matchId) {
-    // ... (запазена логика за премахване на селекция)
     betslipSelections = betslipSelections.filter(s => s.matchId !== matchId);
     renderBetslip();
     renderMatches();
-    // **НОВО:** Скрива фиша, ако няма останали селекции
     toggleBetslipVisibility(betslipSelections.length > 0); 
 }
 
 function renderBetslip() {
-    // ... (запазена логика за рендиране, освен че вече извикваме toggleBetslipVisibility накрая)
     if (betslipSelections.length === 0) {
         elements.betslipList.innerHTML = '<p>Няма избрани селекции.</p>';
         elements.totalOddDisplay.textContent = '1.00';
         elements.potentialWinDisplay.textContent = '0';
         elements.placeBetButton.disabled = true;
-        toggleBetslipVisibility(false); // Скрива фиша
+        toggleBetslipVisibility(false); 
         return;
     }
 
@@ -469,17 +471,15 @@ function renderBetslip() {
         });
     });
     
-    toggleBetslipVisibility(true); // Показва фиша
+    toggleBetslipVisibility(true); 
 }
 
 function initBetslipHandlers() {
-    // ... (без промяна)
     elements.betAmountInput.addEventListener('input', updatePotentialWin);
     elements.placeBetButton.addEventListener('click', placeCombinedBet);
 }
 
 function updatePotentialWin() {
-    // ... (без промяна)
     const betAmount = parseInt(elements.betAmountInput.value) || 0;
     const totalOdd = parseFloat(elements.totalOddDisplay.textContent);
     
@@ -497,7 +497,6 @@ function updatePotentialWin() {
 }
 
 function placeCombinedBet() {
-    // ... (запазена логика за приемане на залог)
     const betAmount = parseInt(elements.betAmountInput.value);
 
     if (betslipSelections.length === 0) {
@@ -536,12 +535,10 @@ function placeCombinedBet() {
     renderMatches();
     renderActiveBets();
     
-    // **НОВО:** Скрива фиша след успешен залог
     toggleBetslipVisibility(false); 
 }
 
 function cashOutBet(betId) {
-    // ... (без промяна)
     const betIndex = activeBets.findIndex(b => b.id === betId);
     if (betIndex === -1) return;
 
@@ -560,7 +557,6 @@ function cashOutBet(betId) {
 
 
 function checkAndSettleBets() {
-    // ... (без промяна)
     const now = Date.now();
     let betsUpdated = false;
 
@@ -609,11 +605,9 @@ function checkAndSettleBets() {
     if (betsUpdated) {
         saveGameData();
         renderActiveBets();
+        renderRanking(); // Обновяваме класирането при уреждане на залози
     }
 }
-
-// --- НОВИ ФУНКЦИИ ЗА ТАБЛИЦАТА С АКТИВНИ ЗАЛОЗИ ---
-// ... (без промяна)
 
 function renderActiveBets() {
     const createTable = (bets, isUnsettled) => {
@@ -699,4 +693,62 @@ function createBetRow(bet, showCashOut) {
             ${showCashOut ? `<td data-label="Действие">${actionHtml}</td>` : ''}
         </tr>
     `;
+}
+
+// --- ЛОГИКА ЗА КЛАСИРАНЕ (НОВА) ---
+function getMockRankingData() {
+    // Взимаме реалния баланс на потребителя
+    const userWon = activeBets.filter(b => b.status === 'Печеливш').length;
+    const userLost = activeBets.filter(b => b.status === 'Губещ').length;
+    
+    return [
+        { name: "Вие (Потребител)", points: userPoints, won: userWon, lost: userLost },
+        { name: "GospodinBet", points: 4500, won: 35, lost: 12 },
+        { name: "Champion_88", points: 3120, won: 22, lost: 10 },
+        { name: "Zalozi_BG", points: 2890, won: 18, lost: 5 },
+        { name: "Ace_of_Spades", points: 1900, won: 14, lost: 7 },
+        { name: "FootballFan", points: 1550, won: 9, lost: 4 },
+        { name: "LuckySeven", points: 1200, won: 7, lost: 3 },
+        { name: "TopGamer", points: 950, won: 6, lost: 4 },
+        { name: "Kefal4o", points: 700, won: 3, lost: 8 },
+        { name: "Novak_BG", points: 500, won: 2, lost: 6 },
+    ].sort((a, b) => b.points - a.points);
+}
+
+function renderRanking() {
+    const rankingData = getMockRankingData();
+    const rankingList = document.getElementById('rankingList');
+    
+    let tableHTML = `
+        <table id="rankingTable" class="bets-table">
+            <thead>
+                <tr>
+                    <th>Място</th>
+                    <th>Име</th>
+                    <th>Познати Срещи</th>
+                    <th>Губещи Срещи</th>
+                    <th>Общо Точки</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    rankingData.forEach((player, index) => {
+        const isUser = player.name.includes("Вие");
+        const rowClass = isUser ? 'ranking-user-row' : '';
+        const rank = index + 1;
+        
+        tableHTML += `
+            <tr class="${rowClass}">
+                <td data-label="Място">${rank}</td>
+                <td data-label="Име">${player.name}</td>
+                <td data-label="Познати Срещи">${player.won}</td>
+                <td data-label="Губещи Срещи">${player.lost}</td>
+                <td data-label="Общо Точки">${player.points}</td>
+            </tr>
+        `;
+    });
+
+    tableHTML += '</tbody></table>';
+    rankingList.innerHTML = tableHTML;
 }
