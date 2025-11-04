@@ -97,7 +97,7 @@ function saveTournament(){ localStorage.setItem('tournamentData', JSON.stringify
 function loadTournament(){ const raw=localStorage.getItem('tournamentData'); if(!raw) return null; try{return JSON.parse(raw);}catch(e){return null;} }
 
 /* Ensure guest */
-function ensureGuest(){ if(!localStorage.getItem('user_default_user')) saveUser('default_user',{ name:'Гост', points:1000, passwordHash:null, activeBets:[], lastSpinTime:null, details:{} }); }
+function ensureGuest(){ if(!localStorage.getItem('user_default_user')) saveUser('default_user',{ name:'Гост', points:0, passwordHash:null, activeBets:[], lastSpinTime:null, details:{} }); }
 
 /* --------------- Tournament init --------------- */
 /* - We'll create rounds such that all matches in a "round" start at the next round hour (all together),
@@ -390,18 +390,49 @@ function showBetslipMsg(msg, err=false){
   setTimeout(()=>{ if(el.betslipMessage){ el.betslipMessage.textContent=''; el.betslipMessage.className='log'; } },4000);
 }
 
-function placeCombinedBet(){
-  if(betslipSelections.length===0){ showBetslipMsg('Изберете поне една среща.', true); return; }
+function placeCombinedBet() {
+  // 🔒 Забрана за гости
+  if (currentUserId === 'default_user' || currentUserName === 'Гост') {
+    showBetslipMsg('Само регистрирани потребители могат да правят залози.', true);
+    return;
+  }
+
+  if (betslipSelections.length === 0) {
+    showBetslipMsg('Изберете поне една среща.', true);
+    return;
+  }
+
   const amount = safeNumber(el.betAmountInput.value);
-  if(amount < MIN_BET){ showBetslipMsg(`Минимален залог ${MIN_BET}`, true); return; }
-  if(amount > userPoints){ showBetslipMsg('Нямате достатъчно точки.', true); return; }
+  if (amount < MIN_BET) {
+    showBetslipMsg(`Минимален залог ${MIN_BET}`, true);
+    return;
+  }
+
+  if (amount > userPoints) {
+    showBetslipMsg('Нямате достатъчно точки.', true);
+    return;
+  }
+
   const totalOdd = calculateTotalOdd();
   const potentialWin = amount * totalOdd;
   userPoints -= amount;
-  const bet = { id:'b_'+Date.now(), timePlaced:new Date().toLocaleString('bg-BG'), amount, totalOdd, potentialWin, selections:JSON.parse(JSON.stringify(betslipSelections)), status:'Очакване', resultText:null };
+
+  const bet = {
+    id: 'b_' + Date.now(),
+    timePlaced: new Date().toLocaleString('bg-BG'),
+    amount,
+    totalOdd,
+    potentialWin,
+    selections: JSON.parse(JSON.stringify(betslipSelections)),
+    status: 'Очакване',
+    resultText: null
+  };
+
   activeBets.push(bet);
   saveCurrentUser();
-  betslipSelections = []; renderBetslip(); renderAll();
+  betslipSelections = [];
+  renderBetslip();
+  renderAll();
   showBetslipMsg(`Залог ${bet.id} е направен. Потенциал: ${fmt(potentialWin)}`, false);
 }
 
@@ -668,9 +699,24 @@ function checkWheelUI(){
 function renderAll(){
   if(el.userPoints) el.userPoints.textContent = fmt(userPoints);
   if(el.userPoints_2) el.userPoints_2.textContent = fmt(userPoints);
-  if(el.currentUserNameTop) { el.currentUserNameTop.textContent = currentUserName; if(currentUserId!=='default_user') el.currentUserNameTop.classList.add('logged-user'); else el.currentUserNameTop.classList.remove('logged-user'); }
+
+  const isGuest = (currentUserId === 'default_user' || currentUserName === 'Гост');
+
+  if(el.currentUserNameTop) {
+    el.currentUserNameTop.textContent = currentUserName;
+    if(!isGuest) el.currentUserNameTop.classList.add('logged-user');
+    else el.currentUserNameTop.classList.remove('logged-user');
+  }
+
   if(el.currentUserNameDisplay) el.currentUserNameDisplay.textContent = currentUserName;
   if(el.currentUserNameLogged) el.currentUserNameLogged.textContent = currentUserName;
+
+  // 🔒 Ако е гост – забрани поставяне на залози
+  if (el.placeBetButton) {
+    el.placeBetButton.disabled = isGuest;
+    el.placeBetButton.title = isGuest ? 'Само регистрирани потребители могат да правят залози.' : '';
+  }
+
   renderMatchesUpcoming();
   renderLiveMatches();
   renderTournamentTables();
@@ -707,28 +753,53 @@ async function handleRegister(e){ if(e && e.preventDefault) e.preventDefault();
   const id = username.toLowerCase().replace(/\s+/g,'_');
   if(loadUser(id)) return showAccountMessage('Потребител вече съществува', true);
   const ph = await hashStringSHA256(password);
-  const userObj = { name: username, points:1000, passwordHash:ph, activeBets:[], lastSpinTime:null, details:{} };
+  const userObj = { name: username, points:100, passwordHash:ph, activeBets:[], lastSpinTime:null, details:{} };
   saveUser(id,userObj); showAccountMessage('Успешна регистрация! Влезте.', false);
   if(el.loginUserName) el.loginUserName.value = username;
   if(el.loginPassword) el.loginPassword.value = '';
 }
-async function handleLogin(e){ if(e && e.preventDefault) e.preventDefault();
+async function handleLogin(e) {
+  if (e && e.preventDefault) e.preventDefault();
   const username = (el.loginUserName && el.loginUserName.value || '').trim();
   const password = (el.loginPassword && el.loginPassword.value || '').trim();
-  if(!username || !password) return showAccountMessage('Попълнете полетата', true);
-  const id = username.toLowerCase().replace(/\s+/g,'_');
+
+  if (!username || !password)
+    return showAccountMessage('Попълнете полетата', true);
+
+  const id = username.toLowerCase().replace(/\s+/g, '_');
   const stored = loadUser(id);
-  if(!stored) return showAccountMessage('Акаунт не съществува', true);
+  if (!stored) return showAccountMessage('Акаунт не съществува', true);
+
   const ph = await hashStringSHA256(password);
-  if(stored.passwordHash !== ph) return showAccountMessage('Грешна парола', true);
-  currentUserId = id; currentUserName = stored.name; userPoints = Number(stored.points||1000); activeBets = stored.activeBets || []; lastSpinTime = stored.lastSpinTime || null;
-  localStorage.setItem('currentUserId', currentUserId); localStorage.setItem('currentUserName', currentUserName);
-  showAccountMessage(`Здравей, ${currentUserName}!`, false); saveCurrentUser(); renderAll();
+  if (stored.passwordHash !== ph)
+    return showAccountMessage('Грешна парола', true);
+
+  // ✅ успешен вход
+  currentUserId = id;
+  currentUserName = stored.name;
+  userPoints = Number(stored.points || 1000);
+  activeBets = stored.activeBets || [];
+  lastSpinTime = stored.lastSpinTime || null;
+
+  localStorage.setItem('currentUserId', currentUserId);
+  localStorage.setItem('currentUserName', currentUserName);
+
+  showAccountMessage(`Здравей, ${currentUserName}!`, false);
+  saveCurrentUser();
+  renderAll();
+
+  // 🔹 скриваме формата и показваме “logged in” състоянието
+  if (el.registrationFormArea) el.registrationFormArea.style.display = 'none';
+  if (el.loggedInStatus) el.loggedInStatus.style.display = 'block';
 }
 function handleLogout(e){ if(e && e.preventDefault) e.preventDefault();
   saveCurrentUser();
   currentUserId = 'default_user'; currentUserName = 'Гост'; localStorage.removeItem('currentUserId'); localStorage.removeItem('currentUserName');
   loadCurrentUser(); renderAll(); showAccountMessage('Излезохте успешно', false);
+
+  // Скрий "Изход" и покажи формата за вход
+  if (el.loggedInStatus) el.loggedInStatus.style.display = 'none';
+  if (el.registrationFormArea) el.registrationFormArea.style.display = 'block';
 }
 function showAccountMessage(msg, err=false){ if(!el.accountMessage) return; el.accountMessage.textContent = msg; el.accountMessage.className = err ? 'log error' : 'log success'; setTimeout(()=>{ if(el.accountMessage){ el.accountMessage.textContent=''; el.accountMessage.className='log'; } },4000); }
 
@@ -770,41 +841,87 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   startUpdateLoop();
 });
 
-/* expose some helpers for debugging in console */
-window.ImpulseBet = { initTournamentIfMissing, tournament, renderAll, saveCurrentUser, loadCurrentUser, calculateCashOutForBet };
+function renderMyBets() {
+  if (!el.unsettledBetsList || !el.settledBetsList) return;
 
-function updateCashOutValues() {
+  // Изчистване
+  el.unsettledBetsList.innerHTML = '';
+  el.settledBetsList.innerHTML = '';
+
+  // Нормализиране на статусите
   activeBets.forEach(bet => {
-    if (bet.status === 'Очакване') {
-      // Проверяваме дали някой от мачовете в залога е "На живо"
-      let match = bet.selections.find(s => {
-        return matchesData.find(m => m.home === s.home && m.away === s.away && m.status === 'На живо');
-      });
-
-      if (match) {
-        const m = matchesData.find(m => m.home === match.home && m.away === match.away);
-        if (m) {
-          // Проста логика: ако отборът води → cash out расте, ако губи → намалява
-          const myTeam = match.type.includes('1') ? m.home : (match.type.includes('2') ? m.away : null);
-          let diff = m.scoreHome - m.scoreAway;
-          let cashOutValue = bet.amount * 0.5; // базова стойност
-
-          if (diff > 0 && m.home === myTeam) cashOutValue = bet.amount * 1.2;
-          else if (diff < 0 && m.home === myTeam) cashOutValue = bet.amount * 0.3;
-          else if (diff > 0 && m.away === myTeam) cashOutValue = bet.amount * 1.2;
-          else if (diff < 0 && m.away === myTeam) cashOutValue = bet.amount * 0.3;
-
-          // ограничаваме до максимум потенциалната печалба
-          if (cashOutValue > bet.potentialWin) cashOutValue = bet.potentialWin;
-
-          // запазваме новата стойност
-          bet.currentCashOut = parseFloat(cashOutValue.toFixed(2));
-        }
-      }
-    }
+    if (!bet.status) bet.status = 'Очакване';
   });
 
-  renderActiveBets();
-}
+  // Разделяне по статус
+  const unsettled = activeBets.filter(b => ['Очакване', 'очакване', 'Pending'].includes(b.status));
+  const settled = activeBets.filter(b => !['Очакване', 'очакване', 'Pending'].includes(b.status));
 
-setInterval(updateCashOutValues, 60000);
+  // Неуредени
+  if (unsettled.length === 0) {
+    el.unsettledBetsList.innerHTML = '<tr><td colspan="6" style="text-align:center;">Няма активни залози.</td></tr>';
+  } else {
+    el.unsettledBetsList.innerHTML = unsettled.map(b => {
+      const sels = b.selections.map(s => {
+        const m = findMatchBySel(s);
+        let liveInfo = '';
+        if (m && m.status === 'На живо') liveInfo = ` <span style="color:#00ffaa;">(${m.scoreHome}:${m.scoreAway} ${m.minute}')`;
+        return `${s.home} vs ${s.away} (${s.type} @ ${fmt(s.odd)})${liveInfo}`;
+      }).join('<br>');
+
+      const anyLive = b.selections.some(s => {
+        const m = findMatchBySel(s);
+        return m && m.status === 'На живо';
+      });
+
+      let cashHtml = '-';
+      if (anyLive) {
+        const cashVal = calculateCashOutForBet(b);
+        cashHtml = `<div style="display:flex;flex-direction:column;gap:6px;">
+          <div><strong>${fmt(cashVal)}</strong> точки</div>
+          <div><button class="action-button cash-btn" data-bet="${b.id}">Cash Out</button></div>
+        </div>`;
+      }
+
+      return `<tr>
+        <td>${b.id}<br><small>${b.timePlaced}</small></td>
+        <td style="text-align:left">${sels}</td>
+        <td>${fmt(b.totalOdd)}</td>
+        <td>${fmt(b.amount)}</td>
+        <td>${fmt(b.potentialWin)}</td>
+        <td>${cashHtml}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Уредени
+  if (settled.length === 0) {
+    el.settledBetsList.innerHTML = '<tr><td colspan="6" style="text-align:center;">Няма уредени залози.</td></tr>';
+  } else {
+    el.settledBetsList.innerHTML = settled.map(b => {
+      const sels = b.selections.map(s => `${s.home} vs ${s.away} (${s.type} @ ${fmt(s.odd)})`).join('<br>');
+      return `<tr>
+        <td>${b.id}<br><small>${b.timePlaced}</small></td>
+        <td style="text-align:left">${sels}</td>
+        <td>${fmt(b.totalOdd)}</td>
+        <td>${fmt(b.amount)}</td>
+        <td>${b.resultText || '-'}</td>
+        <td>${b.status}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Добавяме слушатели
+  document.querySelectorAll('.cash-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      const id = e.currentTarget.dataset.bet;
+      const bet = activeBets.find(b => b.id === id);
+      if (!bet) return;
+      const cash = calculateCashOutForBet(bet);
+      userPoints += cash;
+      bet.status = `Cash Out ${fmt(cash)}`;
+      saveCurrentUser();
+      renderAll();
+    };
+  });
+}
