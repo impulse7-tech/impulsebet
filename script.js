@@ -97,7 +97,24 @@ function saveTournament(){ localStorage.setItem('tournamentData', JSON.stringify
 function loadTournament(){ const raw=localStorage.getItem('tournamentData'); if(!raw) return null; try{return JSON.parse(raw);}catch(e){return null;} }
 
 /* Ensure guest */
-function ensureGuest(){ if(!localStorage.getItem('user_default_user')) saveUser('default_user',{ name:'Гост', points:0, passwordHash:null, activeBets:[], lastSpinTime:null, details:{} }); }
+function ensureGuest() {
+  // Ако няма създаден гост акаунт, го създаваме без точки
+  if (!localStorage.getItem('user_default_user')) {
+    saveUser('default_user', {
+      name: 'Гост',
+      points: 0, // 🔥 няма точки
+      passwordHash: null,
+      activeBets: [],
+      lastSpinTime: null,
+      details: {}
+    });
+  } else {
+    // Ако вече има гост акаунт, зануляваме му точките при всяко влизане
+    const guest = loadUser('default_user');
+    guest.points = 0;
+    saveUser('default_user', guest);
+  }
+}
 
 /* --------------- Tournament init --------------- */
 /* - We'll create rounds such that all matches in a "round" start at the next round hour (all together),
